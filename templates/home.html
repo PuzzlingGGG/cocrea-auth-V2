@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cocrea Auth</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        h1, h2, h3 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            background: #333;
+            border: 1px solid #444;
+            color: #e0e0e0;
+        }
+        button:hover {
+            background: #444;
+        }
+        .user-info {
+            margin-top: 20px;
+        }
+        .avatar {
+            border-radius: 50%;
+        }
+        .message {
+            text-align: center;
+            color: red;
+        }
+        .continue-btn {
+            margin-top: 20px;
+            text-align: center;
+        }
+        a.continue-link {
+            padding: 10px 20px;
+            background: #444;
+            color: #e0e0e0;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        a.continue-link:hover {
+            background: #555;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Cocrea Auth</h1>
+
+        {% if not url %}
+            <p>Hey, you forgot the URL parameter. Please add "?url={url}" to.. this url... if youre a dev using this, you might wanna fix that lol.</p>
+        {% else %}
+            <h2>Generate Temporary Code</h2>
+            <form method="POST">
+                <button type="submit" name="generate">Generate Code</button>
+            </form>
+            {% if generated_code %}
+                <p>Your generated code: <strong>{{ generated_code }}</strong></p>
+                <p>Comment this code on the creation and then verify it below.</p>
+            {% endif %}
+
+            <h2>Verify Temporary Code</h2>
+            <form method="POST">
+                <label for="code">Code:</label>
+                <input type="text" id="code" name="code" required>
+                <button type="submit" name="verify">Verify Code</button>
+            </form>
+            {% if verification_message %}
+                <p class="message">{{ verification_message }}</p>
+            {% endif %}
+            {% if user_info %}
+                <div class="user-info">
+                    <h3>Verification Successful</h3>
+                    <p>Hello, <strong>{{ user_info.username }}</strong>!</p>
+                    <p><strong>ID:</strong> {{ user_info.commenter_id }}</p>
+                    <p><strong>Bio:</strong> {{ user_info.bio }}</p>
+                    <p><strong>Avatar:</strong> <img src="{{ user_info.avatar }}" alt="avatar" width="50" height="50" class="avatar"></p>
+                    <p><strong>Comment ID:</strong> {{ user_info.comment_id }}</p>
+                    <div class="continue-btn">
+                        <a class="continue-link" href="/continue?code={{ generated_code }}&url={{ url }}">Continue</a>
+                    </div>
+                </div>
+                <script>
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                </script>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>
